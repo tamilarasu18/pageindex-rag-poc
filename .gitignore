@@ -1,0 +1,36 @@
+# ─── Python ───────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# ─── Environment & Secrets ────────────────────────
+.env
+*.env.local
+
+# ─── Storage (runtime data) ───────────────────────
+backend/storage/
+backend/test_documents/
+backend/test_results.json
+
+# ─── IDE ──────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── OS ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Misc ─────────────────────────────────────────
+*.log
+*.bak

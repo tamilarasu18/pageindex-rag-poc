@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PageIndex POC — Vectorless RAG Demo</title>
+    <meta
+      name="description"
+      content="PageIndex: Vectorless, Reasoning-based RAG system demo powered by Groq"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ─── Header ────────────────────────────────────────────────────── -->
+    <header class="header">
+      <div class="header__brand">
+        <div class="header__icon">📑</div>
+        <div>
+          <h1 class="header__title">
+            PageIndex <span class="header__badge">POC</span>
+          </h1>
+          <p class="header__subtitle">
+            Vectorless, Reasoning-based RAG · Powered by Groq
+          </p>
+        </div>
+      </div>
+      <div class="header__status" id="apiStatus">
+        <span class="status-dot"></span>
+        <span class="status-text">Checking...</span>
+      </div>
+    </header>
+
+    <!-- ─── Main Layout ───────────────────────────────────────────────── -->
+    <main class="main">
+      <!-- Left Panel: Upload & Documents -->
+      <aside class="panel panel--left">
+        <div class="panel__header">
+          <h2 class="panel__title">📂 Documents</h2>
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-zone__content">
+            <div class="upload-zone__icon">⬆️</div>
+            <p class="upload-zone__text">Drop PDF here or click to upload</p>
+            <p class="upload-zone__hint">Max 50 MB</p>
+          </div>
+          <input type="file" id="fileInput" accept=".pdf" hidden />
+        </div>
+
+        <!-- Upload Progress -->
+        <div class="upload-progress" id="uploadProgress" style="display: none">
+          <div class="upload-progress__bar">
+            <div class="upload-progress__fill" id="uploadFill"></div>
+          </div>
+          <p class="upload-progress__text" id="uploadText">Uploading...</p>
+        </div>
+
+        <!-- Document List -->
+        <div class="doc-list" id="docList">
+          <div class="doc-list__empty">
+            <p>No documents yet</p>
+            <p class="doc-list__empty-hint">Upload a PDF to get started</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Panel: Tree Viewer -->
+      <section class="panel panel--center">
+        <div class="panel__header">
+          <h2 class="panel__title">🌲 Document Index Tree</h2>
+          <span class="panel__info" id="treeInfo"></span>
+        </div>
+        <div class="tree-viewer" id="treeViewer">
+          <div class="tree-viewer__empty">
+            <div class="tree-viewer__empty-icon">🌳</div>
+            <p>Select a document to view its index tree</p>
+            <p class="tree-viewer__empty-hint">
+              PageIndex creates a hierarchical structure<br />
+              like a "Table of Contents" optimized for LLMs
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Q&A Chat -->
+      <section class="panel panel--right">
+        <div class="panel__header">
+          <h2 class="panel__title">💬 Ask Questions</h2>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat" id="chatMessages">
+          <div class="chat__welcome">
+            <div class="chat__welcome-icon">🧠</div>
+            <h3>Reasoning-based Retrieval</h3>
+            <p>
+              Ask any question about your uploaded document. PageIndex uses LLM
+              reasoning to navigate the tree structure and find the most
+              relevant sections.
+            </p>
+            <div class="chat__features">
+              <div class="chat__feature">
+                <span>🎯</span> No vector similarity
+              </div>
+              <div class="chat__feature"><span>🧩</span> No chunking</div>
+              <div class="chat__feature"><span>🔍</span> Human-like search</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input" id="chatInputArea">
+          <div class="chat-input__wrapper">
+            <input
+              type="text"
+              class="chat-input__field"
+              id="chatInput"
+              placeholder="Ask a question about the document..."
+              disabled
+            />
+            <button class="chat-input__btn" id="chatSend" disabled>
+              <span>➤</span>
+            </button>
+          </div>
+          <p class="chat-input__hint" id="chatHint">
+            Upload and index a document first
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- ─── Flow Diagram Modal ────────────────────────────────────────── -->
+    <div class="modal" id="flowModal" style="display: none">
+      <div class="modal__backdrop" onclick="closeModal()"></div>
+      <div class="modal__content">
+        <button class="modal__close" onclick="closeModal()">✕</button>
+        <h2>How PageIndex Works</h2>
+        <div class="flow-diagram">
+          <div class="flow-step">
+            <div class="flow-step__icon">📄</div>
+            <div class="flow-step__label">PDF Upload</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step__icon">📝</div>
+            <div class="flow-step__label">Text Extraction</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step__icon">🔍</div>
+            <div class="flow-step__label">TOC Detection</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step__icon">🌲</div>
+            <div class="flow-step__label">Tree Index</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step__icon">🧠</div>
+            <div class="flow-step__label">Tree Search</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step__icon">💬</div>
+            <div class="flow-step__label">RAG Answer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
